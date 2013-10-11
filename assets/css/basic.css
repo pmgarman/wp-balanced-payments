@@ -1,0 +1,4 @@
+#cc-form label+input,
+#cc-form label+select {
+	display: block;
+}
