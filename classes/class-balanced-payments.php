@@ -82,8 +82,9 @@ class Balanced_Payments {
 			'sslverify' => true,
 			'redirection' => 0,
 			'headers' => array(
+				'Accept'        => 'application/vnd.api+json;revision=1.1',
 				'Authorization' => 'Basic ' . base64_encode( get_balanced_payments_setting( 'secret' ) . ':' ),
-				'Content-Type' => 'application/json'
+				'Content-Type'  => 'application/json'
 			)
 		);
 
@@ -102,8 +103,7 @@ class Balanced_Payments {
 	 * @return void
 	 */
 	public function ajax_post_listener() {
-		echo json_encode( $this->process_payment( $_POST['cc_uri'] ) );
-		exit;
+		wp_send_json( $this->process_payment( $_POST['cc_uri'] ) );
 	}
 
 	/**
@@ -117,12 +117,12 @@ class Balanced_Payments {
 		}
 
 		$card = array(
-			'card_number' => $_POST['cc_number'],
-			'expiration_year' => '20' . $_POST['cc_exp_year'],
+			'card_number'      => $_POST['cc_number'],
+			'expiration_year'  => '20' . $_POST['cc_exp_year'],
 			'expiration_month' => $_POST['cc_exp_month'],
-			'security_code' => $_POST['cc_cvc'],
-			'name' => $_POST['cc_name'],
-			'postal_code' => $_POST['cc_post_code']
+			'security_code'    => $_POST['cc_cvc'],
+			'name'             => $_POST['cc_name'],
+			'postal_code'      => $_POST['cc_post_code']
 		);
 
 		$card = $this->tokenize_card( $card );
@@ -152,35 +152,24 @@ class Balanced_Payments {
 		$customer = $this->create_customer( array( 'name' => $_POST['cc_name'] ) );
 
 		if( intval( $customer['status'] ) !== 201 ) {
-			return array( 'success' => false, 'error' => _( 'Unable to create customer', 'balanced-payments' ) );
+			return array( 'success' => false, 'error' => __( 'Unable to create customer', 'balanced-payments' ) );
 		}
 
 		$customer = json_decode( $customer['json'] );
 
-		$card = $this->attach_token_to_customer( $customer->uri, $token, 'card' );
+		$card = $this->attach_token_to_customer( $customer->customers[0]->href, $token );
 
 		if( intval( $card['status'] ) !== 200 ) {
-			return array( 'success' => false, 'error' => _( 'Unable to attach source to customer.', 'balanced-payments' ) );
+			return array( 'success' => false, 'error' => __( 'Unable to attach source to customer.', 'balanced-payments' ) );
 		}
 
-		$debit = $this->debit_customer( $customer->uri, $token, intval( number_format( $_POST['cc_amount'], 2 ) * 100 ) );
+		$debit = $this->debit_customer( $token, intval( number_format( $_POST['cc_amount'], 2 ) * 100 ) );
 
 		if( intval( $debit['status'] ) !== 201 ) {
-			return array( 'success' => false, 'error' => _( 'Unable to debit the source.', 'balanced-payments' ) );
+			return array( 'success' => false, 'error' => __( 'Unable to debit the source.', 'balanced-payments' ) );
 		}
 
 		return array( 'success' => true, 'error' => null );
-	}
-
-	/**
-	 * Throw ajax error
-	 * 
-	 * @return void
-	 */
-	public function throw_ajax_error( $error ) {
-		echo json_encode( array( 'error' => $error ) );
-		status_header( 500 );
-		exit;
 	}
 
 	/**
@@ -198,7 +187,7 @@ class Balanced_Payments {
 	 * @return array
 	 */
 	public function create_customer( $data ) {
-		return $this->call_api( 'post', '/v1/customers', $data );
+		return $this->call_api( 'post', '/customers', $data );
 	}
 
 	/**
@@ -206,19 +195,9 @@ class Balanced_Payments {
 	 * 
 	 * @return array
 	 */
-	public function attach_token_to_customer( $customer_uri, $token_uri, $type = 'card' ) {
-		switch( $type ) {
-			case 'card':
-				$key = 'card_uri';
-				break;
-			case 'bank':
-				$key = 'bank_account_uri';
-				break;
-			default:
-				return false;
-		}
-		$data[ $key ] = $token_uri;
-		return $this->call_api( 'put', $customer_uri, $data );
+	public function attach_token_to_customer( $customer_uri, $token_uri ) {
+		$data[ 'customer' ] = $customer_uri;
+		return $this->call_api( 'put', $token_uri, $data );
 	}
 
 	/**
@@ -226,14 +205,23 @@ class Balanced_Payments {
 	 * 
 	 * @return array
 	 */
-	public function debit_customer( $customer_uri, $source_uri, $amount ) {
+	public function debit_customer( $source_uri, $amount ) {
 
 		$args = array(
-			'source_uri' => $source_uri,
 			'amount' => intval( $amount )
 		);
 
-		return $this->call_api( 'post', trailingslashit( $customer_uri ) . 'debits', $args );
+		$description = get_balanced_payments_setting( 'description' );
+		if( ! empty( $description ) ) {
+			$args['description'] = $description;
+		}
+
+		$statement = get_balanced_payments_setting( 'appears-on-statement-as' );
+		if( ! empty( $statement ) ) {
+			$args['appears_on_statement_as'] = $statement;
+		}
+
+		return $this->call_api( 'post', trailingslashit( $source_uri ) . 'debits', $args );
 	}
 
 	/**
@@ -321,9 +309,7 @@ class Balanced_Payments {
 	 * @return string
 	 */
 	public function shortcode( $atts ) {
-		extract( shortcode_atts( array(
-			'default' => '0.00',
-		), $atts ) );
+		$default = isset( $atts['default'] ) && ! empty( $atts['default'] ) ? $atts['default'] : get_balanced_payments_setting( 'default-amount' );
 
 		$this->enqueue_scripts();
 
@@ -371,7 +357,7 @@ class Balanced_Payments {
 				</div>
 				<div class="bp-col">
 					<label for="cc_amount"><?php _e( 'Amount', 'balanced-payments' ); ?></label>
-					<input type="text" name="cc_amount" id="cc_amount" placeholder="<?php echo number_format( $default, 2 ); ?>">
+					<input type="text" name="cc_amount" id="cc_amount" placeholder="<?php echo number_format( floatval( $default ), 2 ); ?>">
 				</div>
 				<input type="submit" id="cc_submit" class="button" value="<?php _e( 'Make Payment', 'balanced-payments' ); ?>">
 				<input type="hidden" name="nojs-post" value="1" />

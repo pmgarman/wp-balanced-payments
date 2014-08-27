@@ -150,10 +150,10 @@ class WP_Balanced_Payments_Admin {
 						'placeholder' => 'Donation for WordPress Plugins'
 					)
 				),
-				'on_statement'    => array(
+				'appears-on-statement-as'    => array(
 					'name' => __( 'Appears On Statement As', 'balanced-payments' ),
 					'desc' => sprintf( __( 'Learn more about the "Appears On Statement As" field restrictions in the Balanced Payments API documentation <a target="_blank" href="%s">here</a>.', 'balanced-payments' ), 'https://docs.balancedpayments.com/1.1/api/debits/#create-a-card-debit' ),
-					'id'   => 'on_statement',
+					'id'   => 'appears-on-statement-as',
 					'type' => 'text',
 					'attributes' => array(
 						'placeholder' => '@pmgarman donation'
