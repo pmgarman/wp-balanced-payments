@@ -34,26 +34,43 @@ class Balanced_Payments {
 			$this->admin = new WP_Balanced_Payments_Admin();
 		}
 
+		// Add extra links to plugin dashboard
 		add_filter( 'plugin_action_links_' . $this->plugin_base, array( $this, 'action_links' ) );
 
+		// Register connector with Stream plugin
+		add_filter( 'wp_stream_connectors', array( $this, 'register_stream_connector' ) );
+
+		// Ensure CMB is being loaded
 		add_action( 'init', array( $this, 'init_cmb'), 9999 );
+
+		// Enqueue styles
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles') );
 
+		// AJAX Handlers
 		add_action('wp_ajax_bp_post_listener', array( $this, 'ajax_post_listener' ) );
 		add_action('wp_ajax_nopriv_bp_post_listener', array( $this, 'ajax_post_listener' ) );
 
+		// Add shortcode
 		add_shortcode( 'bp-form', array( $this, 'shortcode' ) );
 	}
 
 	/**
 	 * Initialize the metabox class.
 	 */
-	function init_cmb() {
+	public function init_cmb() {
 
 		if ( ! class_exists( 'cmb_Meta_Box' ) ) {
 			require_once $this->plugin_dir . 'libraries/cmb/init.php';
 		}
 
+	}
+
+	public function register_stream_connector( $classes ) {
+		require_once $this->plugin_dir . '/classes/class-balanced-payments-stream-connector.php';
+
+		$classes[] = 'Balanced_Payments_Stream_Connector';
+
+		return $classes;
 	}
 
 	/**
@@ -164,11 +181,14 @@ class Balanced_Payments {
 			return array( 'success' => false, 'error' => __( 'Unable to attach source to customer.', 'balanced-payments' ) );
 		}
 
-		$debit = $this->debit_customer( $token, intval( number_format( $_POST['cc_amount'], 2 ) * 100 ) );
+		$amount = number_format( $_POST['cc_amount'], 2 );
+		$debit = $this->debit_customer( $token, intval( $amount * 100 ) );
 
 		if( 201 !== intval( $debit['status'] ) ) {
 			return array( 'success' => false, 'error' => __( 'Unable to debit the source.', 'balanced-payments' ) );
 		}
+
+		do_action( 'balanced_payments_card_debited', $amount );
 
 		return array( 'success' => true, 'error' => null );
 	}
