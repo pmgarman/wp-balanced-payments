@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Balanced Payments
- * Plugin URI: https://www.balancedpayments.com/
+ * Plugin URI: https://pmgarman.me/
  * Description: Add simple credit card form to your site with a short code to take payments using Balanced Payments.
- * Version: 1.0.0
+ * Version: 2.0.0
  * Author: Patrick Garman
- * Author URI: http://pmgarman.me
+ * Author URI: https://pmgarman.me
  * Text Domain: balanced-payments
  * Domain Path: /languages/
  * License: GPLv2
@@ -13,13 +13,6 @@
 
 /**
  * Copyright 2013  Patrick Garman  (email: patrick@pmgarman.me)
- *
- * Credit: Settings API from mattyza & pmgarman
- * https://twitter.com/mattyza
- * https://twitter.com/pmgarman
- *
- * Built using the Plugin Jump Starter!
- * https://github.com/pmgarman/plugin-jump-starter
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
