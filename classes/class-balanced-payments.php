@@ -11,10 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  */
 class Balanced_Payments {
 
-	public $version = '2.0.0';
+	public $version           = '2.0.0';
+	public $api_version       = '1.1';
 	public $skeuocard_version = '1.0.3';
-	public $api_url = 'https://api.balancedpayments.com';
-	public $api_version = '1.1';
+
+	public $api_url           = 'https://api.balancedpayments.com';
 
 	/**
 	 * Construct
@@ -22,7 +23,7 @@ class Balanced_Payments {
 	 * @param string $file
 	 */
 	public function __construct( $file ) {
-		$this->name = 'Balanced Payments';
+		$this->name  = 'Balanced Payments';
 		$this->token = 'balanced-payments';
 
 		$this->plugin_base = plugin_basename( $file );
@@ -76,12 +77,12 @@ class Balanced_Payments {
 		$url = untrailingslashit( $this->api_url ) . $uri;
 
 		$args = array(
-			'method' => strtoupper( $method ),
-			'body' => json_encode( $data ),
-			'user-agent' => 'WP-Balanced-Payments/' . $this->version,
-			'sslverify' => true,
+			'method'      => strtoupper( $method ),
+			'body'        => json_encode( $data ),
+			'user-agent'  => 'WP-Balanced-Payments/' . $this->version,
+			'sslverify'   => true,
 			'redirection' => 0,
-			'headers' => array(
+			'headers'     => array(
 				'Accept'        => 'application/vnd.api+json;revision=1.1',
 				'Authorization' => 'Basic ' . base64_encode( get_balanced_payments_setting( 'secret' ) . ':' ),
 				'Content-Type'  => 'application/json'
@@ -91,9 +92,9 @@ class Balanced_Payments {
 		$response = wp_remote_request( $url, $args );
 
 		return array(
-			'json' => wp_remote_retrieve_body( $response ),
+			'json'   => wp_remote_retrieve_body( $response ),
 			'status' => wp_remote_retrieve_response_code( $response ),
-			'raw' => $response
+			'raw'    => $response
 		);
 	}
 
@@ -127,8 +128,8 @@ class Balanced_Payments {
 
 		$card = $this->tokenize_card( $card );
 
-		if( intval( $card['status'] ) !== 201 ) {
-			return '<p class="alert">' . __( 'There was an error securely storing the credit card data, no charges were made.', 'balanced-payments' ) . '</p>';
+		if( 201 !== intval( $card['status'] ) ) {
+			return '<p class="alert">' . get_balanced_payments_setting( 'message-error-card-create' ) . '</p>';
 		}
 
 		$card = json_decode( $card['json'] );
@@ -136,7 +137,7 @@ class Balanced_Payments {
 		$result = $this->process_payment( $card->uri );
 
 		if( $result['success'] ) {
-			return '<p class="success">' . __( 'Thank you for your payment!', 'balanced-payments' ) . '</p>';
+			return '<p class="success">' . get_balanced_payments_setting( 'message-payment-success' ) . '</p>';
 		} else {
 			return '<p class="alert">' . $result['error'] . '</p>';
 		}
@@ -151,7 +152,7 @@ class Balanced_Payments {
 	public function process_payment( $token ) {
 		$customer = $this->create_customer( array( 'name' => $_POST['cc_name'] ) );
 
-		if( intval( $customer['status'] ) !== 201 ) {
+		if( 201 !== intval( $customer['status'] ) ) {
 			return array( 'success' => false, 'error' => __( 'Unable to create customer', 'balanced-payments' ) );
 		}
 
@@ -159,13 +160,13 @@ class Balanced_Payments {
 
 		$card = $this->attach_token_to_customer( $customer->customers[0]->href, $token );
 
-		if( intval( $card['status'] ) !== 200 ) {
+		if( 200 !== intval( $card['status'] ) ) {
 			return array( 'success' => false, 'error' => __( 'Unable to attach source to customer.', 'balanced-payments' ) );
 		}
 
 		$debit = $this->debit_customer( $token, intval( number_format( $_POST['cc_amount'], 2 ) * 100 ) );
 
-		if( intval( $debit['status'] ) !== 201 ) {
+		if( 201 !== intval( $debit['status'] ) ) {
 			return array( 'success' => false, 'error' => __( 'Unable to debit the source.', 'balanced-payments' ) );
 		}
 
@@ -230,7 +231,7 @@ class Balanced_Payments {
 	 * @return array|bool
 	 */
 	public function test_fallback() {
-		if( isset( $_POST['nojs-post'] ) && intval( $_POST['nojs-post'] ) === 1 ) {
+		if( isset( $_POST['nojs-post'] ) && 1 === intval( $_POST['nojs-post'] ) ) {
 			return true;
 		}
 		return false;
@@ -357,7 +358,7 @@ class Balanced_Payments {
 				</div>
 				<div class="bp-col">
 					<label for="cc_amount"><?php _e( 'Amount', 'balanced-payments' ); ?></label>
-					<input type="text" name="cc_amount" id="cc_amount" placeholder="<?php echo number_format( floatval( $default ), 2 ); ?>">
+					<input type="text" name="cc_amount" id="cc_amount" placeholder="10.00" value="<?php echo number_format( floatval( $default ), 2 ); ?>">
 				</div>
 				<input type="submit" id="cc_submit" class="button" value="<?php _e( 'Make Payment', 'balanced-payments' ); ?>">
 				<input type="hidden" name="nojs-post" value="1" />

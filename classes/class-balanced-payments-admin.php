@@ -109,28 +109,31 @@ class WP_Balanced_Payments_Admin {
 
 		self::$settings = array(
 			'id'         => self::$key,
-			'show_on'    => array( 'key' => 'options-page', 'value' => array( self::$key, ), ),
+			'show_on'    => array(
+				'key'   => 'options-page',
+				'value' => array( self::$key )
+			),
 			'show_names' => true,
 			'cmb_styles' => false,
 			'fields'     => array(
-				'api-title' => array(
+				'api-title'                 => array(
 					'name' => __( 'API Details', 'balanced-payments' ),
 					'desc' => __( 'These are found on the Account > Settings page of the Balanced Payments dashboard.', 'balanced-payments' ),
 					'id'   => 'api-title',
 					'type' => 'title',
 				),
-				'uri'       => array(
-					'name' => __( 'Marketplace ID', 'balanced-payments' ),
-					'id'   => 'uri',
-					'type' => 'text',
+				'uri'                       => array(
+					'name'       => __( 'Marketplace ID', 'balanced-payments' ),
+					'id'         => 'uri',
+					'type'       => 'text',
 					'attributes' => array(
 						'placeholder' => 'TEST-MP1TvJwxVNwP6QcgI4z6puO4'
 					)
 				),
-				'secret'    => array(
-					'name' => __( 'API Key Secret', 'balanced-payments' ),
-					'id'   => 'secret',
-					'type' => 'text',
+				'secret'                    => array(
+					'name'       => __( 'API Key Secret', 'balanced-payments' ),
+					'id'         => 'secret',
+					'type'       => 'text',
 					'attributes' => array(
 						'placeholder' => 'ak-test-jYsT5bBaiHRcEYQ25VYuOxHSoCVuKtLT'
 					)
@@ -141,64 +144,58 @@ class WP_Balanced_Payments_Admin {
 					'id'   => 'api-title',
 					'type' => 'title',
 				),
-				'description'    => array(
-					'name' => __( 'Description', 'balanced-payments' ),
-					'desc' => __( 'Private description of credits which will appear only in the Balanced Payments dashboard.', 'balanced-payments' ),
-					'id'   => 'description',
-					'type' => 'text',
+				'description'               => array(
+					'name'       => __( 'Description', 'balanced-payments' ),
+					'desc'       => __( 'Private description of credits which will appear only in the Balanced Payments dashboard.', 'balanced-payments' ),
+					'id'         => 'description',
+					'type'       => 'text',
 					'attributes' => array(
 						'placeholder' => 'Donation for WordPress Plugins'
 					)
 				),
 				'appears-on-statement-as'    => array(
-					'name' => __( 'Appears On Statement As', 'balanced-payments' ),
-					'desc' => sprintf( __( 'Learn more about the "Appears On Statement As" field restrictions in the Balanced Payments API documentation <a target="_blank" href="%s">here</a>.', 'balanced-payments' ), 'https://docs.balancedpayments.com/1.1/api/debits/#create-a-card-debit' ),
-					'id'   => 'appears-on-statement-as',
-					'type' => 'text',
+					'name'       => __( 'Appears On Statement As', 'balanced-payments' ),
+					'desc'       => sprintf( __( 'Learn more about the "Appears On Statement As" field restrictions in the Balanced Payments API documentation <a target="_blank" href="%s">here</a>.', 'balanced-payments' ), 'https://docs.balancedpayments.com/1.1/api/debits/#create-a-card-debit' ),
+					'id'         => 'appears-on-statement-as',
+					'type'       => 'text',
 					'attributes' => array(
 						'placeholder' => '@pmgarman donation'
 					),
 				),
 				'frontend-title' => array(
-					'name' => __( 'Frontend Settings', 'balanced-payments' ),
-					'desc' => __( 'Configure how you want to handle your credit card form to look.', 'balanced-payments' ),
-					'id'   => 'api-title',
-					'type' => 'title',
+					'name'       => __( 'Frontend Settings', 'balanced-payments' ),
+					'desc'       => __( 'Configure how you want to handle your credit card form to look.', 'balanced-payments' ),
+					'id'         => 'api-title',
+					'type'       => 'title',
 				),
 				'styles'    => array(
-					'name'    => __( 'Styles', 'balanced-payments' ),
-					'id'      => 'styles',
-					'type'    => 'select',
-					'options' => array(
+					'name'       => __( 'Styles', 'balanced-payments' ),
+					'id'         => 'styles',
+					'type'       => 'select',
+					'options'    => array(
 						'skeuocard' => __( 'Skeuocard', 'balanced-payments' ),
 						'basic'     => __( 'Basic', 'balanced-payments' )
 					)
 				),
 				'default-amount'    => array(
-					'name' => __( 'Default Amount', 'balanced-payments' ),
-					'id'   => 'default-amount',
-					'type' => 'text_small',
+					'name'       => __( 'Default Amount', 'balanced-payments' ),
+					'id'         => 'default-amount',
+					'type'       => 'text_small',
 					'attributes' => array(
 						'placeholder' => '5.00'
 					)
 				),
 				'message-error-card-create' => array(
-					'name' => __( 'Error Message: Cannot create card', 'balanced-payments' ),
-					'id'   => 'message-error-card-create',
-					'type' => 'text',
-					'default' => __( 'There was an error securely storing the credit card data, no charges were made.', 'balanced-payments' ),
-					'attributes' => array(
-						'placeholder' => ''
-					),
+					'name'       => __( 'Error Message: Cannot create card', 'balanced-payments' ),
+					'id'         => 'message-error-card-create',
+					'type'       => 'text',
+					'default'    => __( 'There was an error securely storing the credit card data, no charges were made.', 'balanced-payments' )
 				),
 				'message-payment-success' => array(
-					'name' => __( 'Error Message: Cannot create card', 'balanced-payments' ),
-					'id'   => 'message-payment-success',
-					'type' => 'text',
-					'default' => __( 'Thank you for your payment!', 'balanced-payments' ),
-					'attributes' => array(
-						'placeholder' => ''
-					),
+					'name'       => __( 'Error Message: Cannot create card', 'balanced-payments' ),
+					'id'         => 'message-payment-success',
+					'type'       => 'text',
+					'default'    => __( 'Thank you for your payment!', 'balanced-payments' )
 				)
 			)
 		);
