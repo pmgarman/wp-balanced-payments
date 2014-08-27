@@ -182,6 +182,24 @@ class WP_Balanced_Payments_Admin {
 						'placeholder' => '5.00'
 					)
 				),
+				'message-error-card-create' => array(
+					'name' => __( 'Error Message: Cannot create card', 'balanced-payments' ),
+					'id'   => 'message-error-card-create',
+					'type' => 'text',
+					'default' => __( 'There was an error securely storing the credit card data, no charges were made.', 'balanced-payments' ),
+					'attributes' => array(
+						'placeholder' => ''
+					),
+				),
+				'message-payment-success' => array(
+					'name' => __( 'Error Message: Cannot create card', 'balanced-payments' ),
+					'id'   => 'message-payment-success',
+					'type' => 'text',
+					'default' => __( 'Thank you for your payment!', 'balanced-payments' ),
+					'attributes' => array(
+						'placeholder' => ''
+					),
+				)
 			)
 		);
 
