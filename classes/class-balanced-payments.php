@@ -36,7 +36,7 @@ class Balanced_Payments {
 		add_filter( 'plugin_action_links_' . $this->plugin_base, array( $this, 'action_links' ) );
 
 		add_action( 'init', array( $this, 'init_cmb'), 9999 );
-		add_action( 'wp_enqueue_scripts', array( $this, 'css') );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles') );
 
 		add_action('wp_ajax_bp_post_listener', array( $this, 'ajax_post_listener' ) );
 		add_action('wp_ajax_nopriv_bp_post_listener', array( $this, 'ajax_post_listener' ) );
@@ -258,6 +258,15 @@ class Balanced_Payments {
 	}
 
 	/**
+	 * Return an asset URL
+	 * 
+	 * @return string
+	 */
+	public function get_library_file_url( $library, $file ) {
+		return trailingslashit( $this->plugin_url ) . 'libraries/' . $library . '/' . $file;
+	}
+
+	/**
 	 * Return the post URL
 	 * 
 	 * @return string
@@ -271,12 +280,39 @@ class Balanced_Payments {
 	 *
 	 * @return void
 	 */
-	public function css() {
-		wp_enqueue_style( 'skeuocard-basic', $this->get_asset_url( 'css/basic.css' ), array(), $this->version );
-		if( isset( $this->settings['balanced-payments']['styles'] ) && $this->settings['balanced-payments']['styles'] === 'skeuocard' ) {
-			wp_enqueue_style( 'skeuocard-reset', $this->get_asset_url( 'css/skeuocard.reset.css' ), array( 'skeuocard-basic' ), $this->skeuocard_version );
-			wp_enqueue_style( 'skeuocard', $this->get_asset_url( 'css/skeuocard.css' ), array( 'skeuocard-reset'), $this->skeuocard_version );
+	public function enqueue_styles() {
+		wp_enqueue_style( 'balanced-payments-basic', $this->get_asset_url( 'css/basic.css' ), array(), $this->version );
+
+		if( get_balanced_payments_setting( 'styles' ) === 'skeuocard' ) {
+			wp_enqueue_style( 'skeuocard-reset', $this->get_library_file_url( 'skeuocard', 'styles/skeuocard.reset.css' ), array( 'balanced-payments-basic' ), $this->skeuocard_version );
+			wp_enqueue_style( 'skeuocard', $this->get_library_file_url( 'skeuocard', 'styles/skeuocard.css' ), array( 'skeuocard-reset'), $this->skeuocard_version );
 		}
+	}
+
+	/**
+	 * Load Scripts
+	 *
+	 * @return void
+	 */
+	public function enqueue_scripts() {
+		$data = array(
+			'URI'             => get_balanced_payments_setting( 'uri' ),
+			'ajax_url'        => admin_url( 'admin-ajax.php' ),
+			'cardCreateError' => get_balanced_payments_setting( 'message-error-card-create' ),
+			'success'         => get_balanced_payments_setting( 'message-payment-success' )
+		);
+
+		$deps = array( 'jquery' );
+
+		if( get_balanced_payments_setting( 'styles' ) == 'skeuocard' ) {
+			wp_enqueue_script( 'skeuocard', $this->get_library_file_url( 'skeuocard', 'javascripts/skeuocard.min.js' ), array( 'jquery' ), $this->skeuocard_version );
+			$deps[] = 'skeuocard';
+		}
+
+		wp_enqueue_script( 'balanced.js', 'https://js.balancedpayments.com/1.1/balanced.js', $deps, $this->api_version );
+		wp_enqueue_script( 'balanced-payments', $this->get_asset_url( 'js/balanced-payments.js' ), array( 'balanced.js' ), $this->version );
+
+		wp_localize_script( 'balanced-payments', 'balancedPayments', $data );
 	}
 
 	/**
@@ -289,24 +325,7 @@ class Balanced_Payments {
 			'default' => '0.00',
 		), $atts ) );
 
-		$data = array(
-			'URI' => $this->settings['balanced-payments']['uri'],
-			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'cardCreateError' => __( 'There was an error securely storing the credit card data, no charges were made.', 'balanced-payments' ),
-			'success' => __( 'Thank you for your payment!', 'balanced-payments' )
-		);
-
-		$deps = array( 'jquery' );
-
-		if( isset( $this->settings['balanced-payments']['styles'] ) && $this->settings['balanced-payments']['styles'] == 'skeuocard' ) {
-			wp_enqueue_script( 'skeuocard', $this->get_asset_url( 'js/skeuocard.min.js' ), array( 'jquery' ), $this->skeuocard_version );
-			$deps[] = 'skeuocard';
-		}
-
-		wp_enqueue_script( 'balanced.js', 'https://js.balancedpayments.com/v1/balanced.js', $deps, 'v1' );
-		wp_enqueue_script( 'balanced-payments', $this->get_asset_url( 'js/balanced-payments.js' ), array( 'balanced.js' ), $this->version );
-
-		wp_localize_script( 'balanced-payments', 'balancedPayments', $data );
+		$this->enqueue_scripts();
 
 		if( $this->test_fallback() ) {
 			return $this->fallback_post_listener();
