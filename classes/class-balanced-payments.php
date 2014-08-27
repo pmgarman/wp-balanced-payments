@@ -82,7 +82,7 @@ class Balanced_Payments {
 			'sslverify' => true,
 			'redirection' => 0,
 			'headers' => array(
-				'Authorization' => 'Basic ' . base64_encode( $this->settings['balanced-payments']['secret'] . ':' ),
+				'Authorization' => 'Basic ' . base64_encode( get_balanced_payments_setting( 'secret' ) . ':' ),
 				'Content-Type' => 'application/json'
 			)
 		);
@@ -189,7 +189,7 @@ class Balanced_Payments {
 	 * @return array
 	 */
 	public function tokenize_card( $card ) {
-		return $this->call_api( 'post', $this->settings['balanced-payments']['uri'] . '/cards', $card );
+		return $this->call_api( 'post', get_balanced_payments_setting( 'uri' ) . '/cards', $card );
 	}
 
 	/**
