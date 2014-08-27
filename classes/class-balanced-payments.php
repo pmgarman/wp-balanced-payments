@@ -25,9 +25,11 @@ class Balanced_Payments {
 		$this->name = 'Balanced Payments';
 		$this->token = 'balanced-payments';
 
-		$this->plugin_url = trailingslashit( plugin_dir_url( $file ) );
-		$this->plugin_dir = trailingslashit( plugin_dir_path( $file ) );
+		$this->plugin_base = plugin_basename( $file );
+		$this->plugin_url  = trailingslashit( plugin_dir_url( $file ) );
+		$this->plugin_dir  = trailingslashit( plugin_dir_path( $file ) );
 
+		add_filter( 'plugin_action_links_' . $this->plugin_base, array( $this, 'action_links' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'css') );
 		add_action( 'init', array( $this, 'init' ) );
 
@@ -59,6 +61,18 @@ class Balanced_Payments {
 			'default_tab' => 'balanced-payments'
 		));
 	}
+
+	/**
+	 * Add custom action links to plugins dashboard
+	 */
+	public function action_links ( $links ) {
+		$new_links[] = sprintf( '<a href="%2$s">%1$s</a>', __( 'Settings', 'balanced-payments' ), admin_url( 'options-general.php?page=balanced-payments' ) );
+		$new_links[] = sprintf( '<a target="_blank" href="%2$s">%1$s</a>', __( 'Support', 'balanced-payments' ), 'https://pmgarman.me/plugin-support/' );
+		$new_links[] = sprintf( '<a target="_blank" href="%2$s">%1$s</a>', __( 'Donate', 'balanced-payments' ), 'https://pmgarman.me/donate/' );
+
+		return array_merge( $new_links, $links );
+	}
+
 
 	/**
 	 * Make API call to Balanced Payments
