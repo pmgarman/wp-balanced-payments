@@ -86,6 +86,7 @@ class WP_Balanced_Payments_Admin {
 	public function admin_page() { ?>
 		<div class="wrap cmb_options_page <?php echo self::$key; ?>">
 			<h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
+			<p>To display the credit card form on pages use the <code>[bp-form]</code> shortcode. You can pass a default amount attribute to override the global option below in the shortcode, example: <code>[bp-form default="10.00"]</code></p>
 			<?php // Check for CMB
 			if( class_exists( 'cmb_Meta_Box' ) ) {
 				cmb_metabox_form( $this->option_fields(), self::$key );
