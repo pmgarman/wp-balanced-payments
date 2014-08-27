@@ -29,9 +29,14 @@ class Balanced_Payments {
 		$this->plugin_url  = trailingslashit( plugin_dir_url( $file ) );
 		$this->plugin_dir  = trailingslashit( plugin_dir_path( $file ) );
 
+		if( is_admin() ) {
+			$this->admin = new WP_Balanced_Payments_Admin();
+		}
+
 		add_filter( 'plugin_action_links_' . $this->plugin_base, array( $this, 'action_links' ) );
+
+		add_action( 'init', array( $this, 'init_cmb'), 9999 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'css') );
-		add_action( 'init', array( $this, 'init' ) );
 
 		add_action('wp_ajax_bp_post_listener', array( $this, 'ajax_post_listener' ) );
 		add_action('wp_ajax_nopriv_bp_post_listener', array( $this, 'ajax_post_listener' ) );
@@ -40,26 +45,14 @@ class Balanced_Payments {
 	}
 
 	/**
-	 * Init the extension settings
-	 * 
-	 * @return void
+	 * Initialize the metabox class.
 	 */
-	public function init() {
-		$tabs = array(
-			'balanced-payments' => 'Balanced_Payments_Settings'
-		);
+	function init_cmb() {
 
-		foreach( $tabs as $key => $obj ) {
-			if( !class_exists( $obj ) )
-				continue;
-			$this->settings_objs[ $key ] = new $obj;
-			$this->settings[ $key ] = $this->settings_objs[ $key ]->get_settings();
-			add_action( 'admin_init', array( $this->settings_objs[ $key ], 'setup_settings' ) );
+		if ( ! class_exists( 'cmb_Meta_Box' ) ) {
+			require_once $this->plugin_dir . 'libraries/cmb/init.php';
 		}
 
-		$this->settings_screen = new Balanced_Payments_Settings_Screen( array(
-			'default_tab' => 'balanced-payments'
-		));
 	}
 
 	/**
