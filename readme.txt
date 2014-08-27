@@ -32,6 +32,7 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 * Add Skeuocard as Submodule
 * Add helper links to plugin dashboard
 * Add option for email notification when payments are made using default wp_mail
+* Add check for form processing to ensure forms are not submitted multiple times causing multiple charges
 * Update for BP API v1.1
 * Fix when making payment customer is not created, causing card to not attach to anyone and not be able to be debited.
 

@@ -6,6 +6,14 @@ jQuery(document).ready(function(){
 	jQuery('#cc-form #cc_submit').click(function (e) {
         e.preventDefault();
 
+        var $this = jQuery(this);
+
+        if( $this.hasClass('processing') ) {
+            return;
+        }
+
+        $this.addClass('processing');
+
         jQuery('#cc-form #response').hide();
 
         var payload = {
@@ -23,8 +31,6 @@ jQuery(document).ready(function(){
 
         // Tokenize credit card
         balanced.card.create(payload, function (response) {
-
-            console.log(response.cards[0].href);
             // Successful tokenization
             if(201 === response.status_code) {
                 // Send to your backend
@@ -36,16 +42,17 @@ jQuery(document).ready(function(){
                     cc_post_code: jQuery('#cc-form #cc_post_code').val()
                 }, function(data) {
                     console.log(data);
-                    // if ( data.success == true ) {
-                    //     jQuery('#cc-form').html('<p class="success">' + balancedPayments.success + '</p>');
-                    // } else {
-                    //     jQuery('#cc-form').html('<p class="alert">' + data.error + '</p>');
-                    // }
+                    if ( data.success == true ) {
+                        jQuery('#cc-form').html('<p class="success">' + balancedPayments.success + '</p>');
+                    } else {
+                        jQuery('#cc-form').html('<p class="alert">' + data.error + '</p>');
+                    }
                 });
             } else {
                 jQuery('#cc-form').html('<p class="alert">' + balancedPayments.cardCreateError + '</p>');
             }
 
+            $this.removeClass('processing');
         });
     });
 	// 
