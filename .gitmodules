@@ -1,0 +1,3 @@
+[submodule "libraries/skeuocard"]
+	path = libraries/skeuocard
+	url = https://github.com/kenkeiter/skeuocard.git
