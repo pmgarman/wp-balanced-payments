@@ -364,12 +364,18 @@ class Balanced_Payments {
 				<label for="cc_cvc"><?php _e( 'Card Validation Code', 'balanced-payments' ); ?></label>
 				<input type="text" name="cc_cvc" id="cc_cvc" placeholder="123" maxlength="3" size="3">
 			</div>
-			<label for="cc_post_code"><?php _e( 'Billing Zip Code', 'balanced-payments' ); ?></label>
-			<input type="text" name="cc_post_code" id="cc_post_code" placeholder="<?php _e( '12345', 'balanced-payments' ); ?>" >
-			<label for="cc_amount"><?php _e( 'Amount', 'balanced-payments' ); ?></label>
-			<input type="text" name="cc_amount" id="cc_amount" placeholder="<?php echo number_format( $default, 2 ); ?>">
-			<input type="submit" id="cc_submit" class="button" value="<?php _e( 'Make Payment', 'balanced-payments' ); ?>">
-			<input type="hidden" name="nojs-post" value="1" />
+			<div class="transaction-data">
+				<div class="bp-col">
+					<label for="cc_post_code"><?php _e( 'Billing Zip Code', 'balanced-payments' ); ?></label>
+					<input type="text" name="cc_post_code" id="cc_post_code" placeholder="<?php _e( '12345', 'balanced-payments' ); ?>" >
+				</div>
+				<div class="bp-col">
+					<label for="cc_amount"><?php _e( 'Amount', 'balanced-payments' ); ?></label>
+					<input type="text" name="cc_amount" id="cc_amount" placeholder="<?php echo number_format( $default, 2 ); ?>">
+				</div>
+				<input type="submit" id="cc_submit" class="button" value="<?php _e( 'Make Payment', 'balanced-payments' ); ?>">
+				<input type="hidden" name="nojs-post" value="1" />
+			</div>
 		</form>
 		<?php
 		return ob_get_clean();
