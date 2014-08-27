@@ -1,10 +1,10 @@
 === Balanced Payments ===
 Contributors: patrickgarman 
-Donate link:http://patrickisageni.us/
+Donate link: https://pmgarman.me/donate/
 Tags: balanced payments, balanced, payments, credit card, skeuocard
 Requires at least: 3.0
-Tested up to: 3.6
-Stable tag: 1.0.0
+Tested up to: 4.0
+Stable tag: 2.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -23,6 +23,18 @@ https://github.com/kenkeiter/skeuocard
 Extract the zip file and just drop the contents in the wp-content/plugins/ directory of your WordPress installation and then activate the Plugin from Plugins page.
 
 == Changelog ==
+
+= 2.0.0 - 08/26/2014 =
+* Add option for "appears on statement as"
+* Add option for default value on form
+* Add option for BP dashboard description
+* Add CMB as Submodule
+* Add Skeuocard as Submodule
+* Add helper links to plugin dashboard
+* Add check for form processing to ensure forms are not submitted multiple times causing multiple charges
+* Add integration with Stream for super simple reporting
+* Update for BP API v1.1
+* Fix when making payment customer is not created, causing card to not attach to anyone and not be able to be debited.
 
 = 1.0.0 - 10/11/2013 =
 * Intial Release

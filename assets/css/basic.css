@@ -2,3 +2,18 @@
 #cc-form label+select {
 	display: block;
 }
+
+.skeuocard.js {
+	margin: 0 auto;
+}
+
+.transaction-data {
+	text-align: center;
+}
+
+.bp-col {
+	width: 46%;
+	float: left;
+	padding: 2%;
+	text-align: left;
+}

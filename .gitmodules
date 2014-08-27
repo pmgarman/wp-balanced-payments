@@ -1,0 +1,7 @@
+[submodule "libraries/skeuocard"]
+	path = libraries/skeuocard
+	url = https://github.com/kenkeiter/skeuocard.git
+[submodule "libraries/cmb"]
+	path = libraries/cmb
+	url = https://github.com/WebDevStudios/Custom-Metaboxes-and-Fields-for-WordPress.git
+	branch = trunk
