@@ -35,15 +35,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-if( !class_exists( 'Balanced_Payments' ) ) {
-
-	// Settings Classes
-	require 'classes/class-balanced-payments-settings-api.php';
-	require 'classes/class-balanced-payments-settings-screen.php';
-	require 'classes/class-balanced-payments-settings.php';
-
-	// Main Class
-	require 'classes/class-balanced-payments.php';
+if( ! class_exists( 'Balanced_Payments' ) ) {
+	// Required Files
+	require_once 'classes/class-balanced-payments-admin.php';
+	require_once 'classes/class-balanced-payments.php';
 
 	// Start the engines!
 	global $Balanced_Payments;

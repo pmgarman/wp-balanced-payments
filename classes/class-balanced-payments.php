@@ -11,9 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  */
 class Balanced_Payments {
 
-	public $version = '1.0.0';
+	public $version = '2.0.0';
 	public $skeuocard_version = '1.0.3';
 	public $api_url = 'https://api.balancedpayments.com';
+	public $api_version = '1.1';
 
 	/**
 	 * Construct
