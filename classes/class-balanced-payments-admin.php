@@ -211,6 +211,6 @@ class WP_Balanced_Payments_Admin {
  *
  * @return mixed        Option value
  */
-function get_balanced_payments_options( $key = '' ) {
+function get_balanced_payments_setting( $key = '' ) {
 	return cmb_get_option( WP_Balanced_Payments_Admin::key(), $key );
 }
